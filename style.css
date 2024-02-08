@@ -12,7 +12,8 @@
     position: absolute;
     height: 95%;
     border: 2px solid #000000;
-    perspective: 600px;
+    perspective: 800px;
+    perspective-origin: 50% 200px;
     overflow: hidden;
     display: inline-block;
 }
@@ -24,120 +25,6 @@
     transform-style: preserve-3d;
 }
 
-
-/* Kaste */
-#square1 {
+.plane {
     position: absolute;
-    height: 200px;
-    width: 200px;
-    background: rgba(255, 0 , 0, 0.5);
-    transform: translate3d(0px, 0px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-}
-#square2 {
-    position: absolute;
-    height: 200px;
-    width: 200px;
-    background: rgba(255, 255 , 0, 0.5);
-    transform: translate3d(0px, 100px, -100px) rotateX(90deg) rotateY(0deg) rotateZ(0deg);
-}
-#square3 {
-    position: absolute;
-    height: 200px;
-    width: 200px;
-    background: rgba(25, 187, 228, 0.5);
-    transform: translate3d(0px, 0px, -200px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-}
-#square4{
-    position: absolute;
-    height: 200px;
-    width: 200px;
-    background: rgba(238, 23, 238, 0.5);
-    transform: translate3d(0px, -100px, -100px) rotateX(90deg) rotateY(0deg) rotateZ(0deg);
-}
-#square5{
-    position: absolute;
-    height: 200px;
-    width: 200px;
-    background: rgba(120, 243, 19, 0.5);
-    transform: translate3d(-100px, 0px, -100px) rotateX(0deg) rotateY(90deg) rotateZ(0deg);
-}
-#square6{
-    position: absolute;
-    height: 200px;
-    width: 200px;
-    background: rgba(143, 93, 0, 0.5);
-    transform: translate3d(100px, 0px, -100px) rotateX(0deg) rotateY(90deg) rotateZ(0deg);
-}
-
-/* Grīda */
-#floor {
-    position: absolute;
-    height: 1000px;
-    width: 1000px;
-    background: rgba(72, 72, 72, 0.5);
-    background-image: url('cracked-asphalt-texture.jpg');
-    transform: translate3d(-400px, -300px, -100px) rotateX(90deg) rotateY(0deg) rotateZ(0deg);
-}
-
-#euro2 {
-    background-image: url('IMG/2euro.png');
-    position: absolute;
-    height: 100px;
-    width: 100px;
-    transform: translate3d(-100px, 100px, 100px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-}
-  
-/* Siena 3 */
-#wall3 {
-    position: absolute;
-    height: 998px;
-    width: 300px;
-    background: rgba(236, 6, 6, 0.5);
-    background-image: url('brick.jpg');
-    transform: translate3d(-50px, -449px, -599px) rotateX(0deg) rotateY(0deg) rotateZ(90deg);
-}
-/* Siena 2 */
-#wall {
-    position: absolute;
-    height: 300px;
-    width: 1000px;
-    background: rgba(20, 224, 37, 0.5);
-    background-image: url('brick.jpg');
-    transform: translate3d(100px, -100px, -100px) rotateX(0deg) rotateY(90deg) rotateZ(0deg);
-}
-
-/* Siena */
-#wall1 {
-    position: absolute;
-    height: 300px;
-    width: 1000px;
-    background: rgba(21, 0, 211, 0.5);
-    background-image: url('brick.jpg');
-    transform: translate3d(-900px, -100px, -100px) rotateX(0deg) rotateY(90deg) rotateZ(0deg);
-}
-
-/* priekša */
-#prieksa1{
-    position: absolute;
-    height: 300px;
-    width: 400px;
-    background: rgba(143, 93, 0, 1);
-    background-image: url('brick.jpg');
-    transform: translate3d(200px, -100px, 400px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-}
-#prieksa2{
-    position: absolute;
-    height: 300px;
-    width: 400px;
-    background: rgba(143, 93, 0, 1);
-    background-image: url('brick.jpg');
-    transform: translate3d(-400px, -100px, 400px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-}
-#prieksa3{
-    position: absolute;
-    height: 100px;
-    width: 210px;
-    background: rgba(143, 93, 0, 1);
-    background-image: url('brick.jpg');
-    transform: translate3d(-5px, -100px, 400px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
 }

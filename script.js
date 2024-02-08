@@ -1,4 +1,3 @@
-//  https://www.toptal.com/developers/keycode
 const world = document.getElementById('world')
 const container = document.getElementById('container')
 const infoWindow = document.getElementById('infoWindow')
@@ -9,7 +8,7 @@ document.addEventListener( "keydown", onKeyPress )
 document.addEventListener( "keyup", onKeyRelese )
 document.addEventListener( "mousemove", onMouseMove )
 
-document.addEventListener( "pointerlockchange", () => { lockedPointer = !lockedPointer } )
+document.addEventListener( "pointerlockchange", () => { lockedPointer = (document.pointerLockElement != null) } )
 
 container.onclick = function() {
     container.requestPointerLock()
@@ -21,8 +20,26 @@ let isInfoPanelOpen = false
 let movementSpeed = 6
 let sensitivity = 0.2
 
-let position = vec3( 500, 360, 0 )
-let rotation = vec3( -30, 45, 0 )
+let position = vec3( 0, 0, 0 )
+let rotation = vec3( 0, 0, 0 )
+
+//Valid types: div, bundle
+let bundles = {}
+
+let map = {
+    player : {
+        pos : vec3( 0, 0, 0 ),
+        rot : vec3( 90, 0, 0 )
+    },
+    world : {
+        type : 'bundle',
+        position : vec3(),
+        rotation : vec3(),
+        children : [
+            { type : 'div', position : vec3( 0, 0, 0), rotation : vec3( 90, 0, 0 ), meta : { width : 400, height : 400, texture : 'url("IMG/cracked-asphalt-texture.jpg")', name : 'floor' } }
+        ]
+    }
+}
 
 //Util function
 function vec3( x = 0, y = 0, z = 0 ) {
@@ -31,6 +48,25 @@ function vec3( x = 0, y = 0, z = 0 ) {
         y : y,
         z : z,
     }
+}
+function addVec3( vec1, vec2 ) {
+    return {
+        x : vec1.x + vec2.x,
+        y : vec1.y + vec2.y,
+        z : vec1.z + vec2.z,
+    }
+}
+
+function getTransform( pos, org ) { //
+    return  `rotateX( ${ org.x }deg ) rotateY( ${ org.y }deg ) translate3d(${ pos.x }px, ${ pos.y }px, ${ pos.z }px)`
+}
+
+function clamp( min, max, val ) {
+    if ( val < min ) {
+        return min
+    } else if ( val > max ) {
+        return max
+    } else return val
 }
 
 //Event callbacks
@@ -52,8 +88,8 @@ function onKeyRelese( event ) {
       
         return
     }else if ( event.code == 'KeyR' ) {
-        position = vec3( 500, 360, 0 )
-        rotation = vec3( -30, 0, 0 )
+        Object.assign( position, map.player.pos )
+        Object.assign( rotation, map.player.rot )
       
         return
     }
@@ -67,13 +103,15 @@ function onMouseMove( event ) {
 
     rotation.y += event.movementX * sensitivity
     rotation.x -= event.movementY * sensitivity
+
+    rotation.x = clamp( -70, 70, rotation.x )
 }
 
 //Update functions
 
 function updateWorld() {
-    world.style.transform = 
-        `translateZ( 600px ) rotateX( ${ rotation.x }deg ) rotateY( ${ rotation.y }deg ) translate3d(${ position.x }px, ${ position.y }px, ${ position.z }px)`
+    world.style.transform = "translateZ( 600px )" +
+       getTransform( position, rotation )
 }
 
 function updatePlayerMovement() {
@@ -105,6 +143,13 @@ function updatePlayerMovement() {
         position.x -= facingVector.x * movementSpeed
         position.z -= facingVector.y * movementSpeed
     }
+
+    if ( keymap.KeyE ) {
+        position.y += movementSpeed
+    } 
+    if ( keymap.KeyQ ) {
+        position.y -= movementSpeed
+    } 
 
     if ( rotation.x > 360 ) { rotation.x -= 360 }
     if ( rotation.x < -360 ) { rotation.x += 360 }
@@ -184,6 +229,35 @@ function game() {
     myReq = requestAnimationFrame(game)
 }
 
+function parsDiv( entry ) {
+    if ( entry.type != 'div' ) return;
+
+    let div = document.createElement( 'div' )
+    div.className = 'plane'
+    div.id = entry.meta.name || 'plane'
+
+    div.style.width = ( entry.meta.width || 100 ) + 'px'
+    div.style.height = ( entry.meta.height || 100 ) + 'px'
+    
+    div.style.transform = getTransform( vec3(), entry.rotation ) + "translateZ( 600px )"
+
+    if ( entry.meta.color ) {
+        div.style.background = entry.meta.color
+    } else {
+        div.style.backgroundImage = entry.meta.texture
+    }
+
+    world.appendChild( div )
+    return div
+}
+function parsBundle() {
+
+}
+
+// parsDiv( map.world.children[ 0 ] )
+
+Object.assign( position, map.player.pos )
+Object.assign( rotation, map.player.rot )
 
 //Starting le gaem
 game()
