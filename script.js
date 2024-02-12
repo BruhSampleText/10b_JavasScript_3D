@@ -1,4 +1,3 @@
-const world = document.getElementById('world')
 const container = document.getElementById('container')
 const infoWindow = document.getElementById('infoWindow')
 
@@ -13,6 +12,8 @@ document.addEventListener( "pointerlockchange", () => { lockedPointer = (documen
 container.onclick = function() {
     container.requestPointerLock()
 }
+
+let world
 
 let lockedPointer = false
 let isInfoPanelOpen = false
@@ -29,14 +30,37 @@ let bundles = {}
 let map = {
     player : {
         pos : vec3( 0, 0, 0 ),
-        rot : vec3( 90, 0, 0 )
+        rot : vec3( 0, 0, 0 )
     },
+    //the world div is now represented by this bundle
+    //nested bundles should be avoided
     world : {
         type : 'bundle',
-        position : vec3(),
-        rotation : vec3(),
+        name : "world",
+
+        position : vec3(0, 0, 0 ),
+        rotation : vec3( 0, 0, 0 ),
         children : [
-            { type : 'div', position : vec3( 0, 0, 0), rotation : vec3( 90, 0, 0 ), meta : { width : 400, height : 400, texture : 'url("IMG/cracked-asphalt-texture.jpg")', name : 'floor' } }
+            { type : 'div', position : vec3( 0, 100, 0), rotation : vec3( 90, 0, 0 ), meta : { width : 2000, height : 2000, texture : 'url("IMG/cracked-asphalt-texture.jpg")', name : 'floor' } },
+            
+            
+            
+            { 
+                type : "bundle",
+                name : "cubiod",
+
+                position : vec3(0, 0, 0),
+                rotation : vec3(),
+
+                children : [
+                    { type : 'div', position : vec3( 0, 0, 50), rotation : vec3( 0, 0, 0 ), meta : { width : 100, height : 100, color : "red", name : 'Front' } },
+                    { type : 'div', position : vec3( 0, 0, -50), rotation : vec3( 0, 0, 0 ), meta : { width : 100, height : 100, color : "yellow", name : 'Back' } },
+                    { type : 'div', position : vec3( 50, 0, -100), rotation : vec3( 0, 90, 0 ), meta : { width : 100, height : 100, color : "green", name : 'Left' } },
+                    { type : 'div', position : vec3( 50, 0, 0), rotation : vec3( 0, -90, 0 ), meta : { width : 100, height : 100, color : "blue", name : 'Right' } },
+                    { type : 'div', position : vec3( 0, 50, 100), rotation : vec3( 90, 0, 0 ), meta : { width : 100, height : 100, color : "pink", name : 'Top' } },
+                    { type : 'div', position : vec3( 0, 50, 0), rotation : vec3( -90, 0, 0 ), meta : { width : 100, height : 100, color : "purple", name : 'Bottom' } },
+                ]
+            }
         ]
     }
 }
@@ -58,7 +82,7 @@ function addVec3( vec1, vec2 ) {
 }
 
 function getTransform( pos, org ) { //
-    return  `rotateX( ${ org.x }deg ) rotateY( ${ org.y }deg ) translate3d(${ pos.x }px, ${ pos.y }px, ${ pos.z }px)`
+    return `rotateX( ${ org.x }deg ) rotateY( ${ org.y }deg ) translate3d(${ pos.x }px, ${ pos.y }px, ${ pos.z }px)`
 }
 
 function clamp( min, max, val ) {
@@ -109,9 +133,20 @@ function onMouseMove( event ) {
 
 //Update functions
 
+let test
+let cubeRot = vec3()
+
 function updateWorld() {
-    world.style.transform = "translateZ( 600px )" +
-       getTransform( position, rotation )
+    world.style.transform = 
+        "translateZ( 800px )" + getTransform( position, rotation )
+    
+    test.style.transform =
+        "translateZ( 800px )" + getTransform( vec3(  ), cubeRot )
+
+    cubeRot.x += 5
+    if ( cubeRot.x > 360 ) {
+        cubeRot.x -= 360
+    }
 }
 
 function updatePlayerMovement() {
@@ -229,7 +264,7 @@ function game() {
     myReq = requestAnimationFrame(game)
 }
 
-function parsDiv( entry ) {
+function parsDiv( entry, parent ) {
     if ( entry.type != 'div' ) return;
 
     let div = document.createElement( 'div' )
@@ -239,7 +274,9 @@ function parsDiv( entry ) {
     div.style.width = ( entry.meta.width || 100 ) + 'px'
     div.style.height = ( entry.meta.height || 100 ) + 'px'
     
-    div.style.transform = getTransform( vec3(), entry.rotation ) + "translateZ( 600px )"
+    div.style.transform = getTransform( addVec3(
+        entry.position, vec3( -entry.meta.width / 2, -entry.meta.height / 2, 0 )
+    ), entry.rotation )
 
     if ( entry.meta.color ) {
         div.style.background = entry.meta.color
@@ -247,17 +284,40 @@ function parsDiv( entry ) {
         div.style.backgroundImage = entry.meta.texture
     }
 
-    world.appendChild( div )
+    parent.appendChild( div )
     return div
 }
-function parsBundle() {
+function parsBundle( bundle, parent ) {
+    if ( bundle.type != 'bundle' ) return;
 
+    let div = document.createElement( "div" )
+    div.className = 'bundle'
+    div.id = bundle.name || 'bundle'
+
+    div.style.transform = getTransform( bundle.position, bundle.rotation )
+
+    parent.appendChild( div )
+
+    for ( let index = 0; index < bundle.children.length; index++ ) {
+        let child = bundle.children[ index ]
+
+        if ( child.type == 'bundle' ) {
+            parsBundle( child, div )
+        } else {
+            parsDiv( child, div )
+        }
+    }
+
+    return div
 }
 
-// parsDiv( map.world.children[ 0 ] )
+//Loads in the map as a bundle
+world = parsBundle( map.world, container )
 
 Object.assign( position, map.player.pos )
 Object.assign( rotation, map.player.rot )
+
+test = document.getElementById( "cubiod" )
 
 //Starting le gaem
 game()

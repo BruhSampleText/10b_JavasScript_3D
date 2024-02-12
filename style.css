@@ -8,23 +8,25 @@
     display: inline-block;
 }
 
-#container {
-    position: absolute;
-    height: 95%;
-    border: 2px solid #000000;
-    perspective: 800px;
-    perspective-origin: 50% 200px;
-    overflow: hidden;
-    display: inline-block;
+#container{
+	position:absolute;
+	border:2px solid #000000;
+	overflow:hidden;
+
+	height: 95%;
+
+    perspective:800px;
+    perspective-origin: center center;
 }
 
-#world {
-    position: absolute;
-    height: inherit;
-    width: inherit;
-    transform-style: preserve-3d;
-}
+.bundle{
+	position: absolute;
 
-.plane {
-    position: absolute;
+	width:inherit;
+	height:inherit;
+
+	transform-style:preserve-3d;
+}
+.plane{
+	position: absolute;
 }
