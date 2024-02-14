@@ -42,9 +42,7 @@ let map = {
         rotation : vec3( 0, 0, 0 ),
         children : [
             { type : 'div', position : vec3( 0, 100, 0), rotation : vec3( 90, 0, 0 ), meta : { width : 2000, height : 2000, texture : 'url("IMG/cracked-asphalt-texture.jpg")', name : 'floor' } },
-            
-            
-            
+
             { 
                 type : "bundle",
                 name : "cubiod",
@@ -136,16 +134,20 @@ function onMouseMove( event ) {
 let test
 let cubeRot = vec3()
 
-function updateWorld() {
+function updateWorld() {// 
     world.style.transform = 
-        "translateZ( 800px )" + getTransform( position, rotation )
+      "translateZ( 800px )" +  getTransform( position, rotation )
     
     test.style.transform =
-        "translateZ( 800px )" + getTransform( vec3(  ), cubeRot )
+        getTransform( vec3(  ), cubeRot )
 
     cubeRot.x += 5
     if ( cubeRot.x > 360 ) {
         cubeRot.x -= 360
+    }
+    cubeRot.y += 5
+    if ( cubeRot.y > 360 ) {
+        cubeRot.y -= 360
     }
 }
 
@@ -294,6 +296,9 @@ function parsBundle( bundle, parent ) {
     div.className = 'bundle'
     div.id = bundle.name || 'bundle'
 
+    div.style.width = "0px"
+    div.style.height = "0px"
+
     div.style.transform = getTransform( bundle.position, bundle.rotation )
 
     parent.appendChild( div )
@@ -318,6 +323,7 @@ Object.assign( position, map.player.pos )
 Object.assign( rotation, map.player.rot )
 
 test = document.getElementById( "cubiod" )
-
+world.style.width = "100%"
+world.style.height = "100%"
 //Starting le gaem
 game()
