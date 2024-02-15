@@ -2,6 +2,7 @@ const container = document.getElementById('container')
 const infoWindow = document.getElementById('infoWindow')
 
 const deg = Math.PI / 180
+const perspective = 600
 
 document.addEventListener( "keydown", onKeyPress )
 document.addEventListener( "keyup", onKeyRelese )
@@ -24,44 +25,6 @@ let sensitivity = 0.2
 let position = vec3( 0, 0, 0 )
 let rotation = vec3( 0, 0, 0 )
 
-//Valid types: div, bundle
-let bundles = {}
-
-let map = {
-    player : {
-        pos : vec3( 0, 0, 0 ),
-        rot : vec3( 0, 0, 0 )
-    },
-    //the world div is now represented by this bundle
-    //nested bundles should be avoided
-    world : {
-        type : 'bundle',
-        name : "world",
-
-        position : vec3(0, 0, 0 ),
-        rotation : vec3( 0, 0, 0 ),
-        children : [
-            { type : 'div', position : vec3( 0, 100, 0), rotation : vec3( 90, 0, 0 ), meta : { width : 2000, height : 2000, texture : 'url("IMG/cracked-asphalt-texture.jpg")', name : 'floor' } },
-
-            { 
-                type : "bundle",
-                name : "cubiod",
-
-                position : vec3(0, 0, 0),
-                rotation : vec3(),
-
-                children : [
-                    { type : 'div', position : vec3( 0, 0, 50), rotation : vec3( 0, 0, 0 ), meta : { width : 100, height : 100, color : "red", name : 'Front' } },
-                    { type : 'div', position : vec3( 0, 0, -50), rotation : vec3( 0, 0, 0 ), meta : { width : 100, height : 100, color : "yellow", name : 'Back' } },
-                    { type : 'div', position : vec3( 50, 0, -100), rotation : vec3( 0, 90, 0 ), meta : { width : 100, height : 100, color : "green", name : 'Left' } },
-                    { type : 'div', position : vec3( 50, 0, 0), rotation : vec3( 0, -90, 0 ), meta : { width : 100, height : 100, color : "blue", name : 'Right' } },
-                    { type : 'div', position : vec3( 0, 50, 100), rotation : vec3( 90, 0, 0 ), meta : { width : 100, height : 100, color : "pink", name : 'Top' } },
-                    { type : 'div', position : vec3( 0, 50, 0), rotation : vec3( -90, 0, 0 ), meta : { width : 100, height : 100, color : "purple", name : 'Bottom' } },
-                ]
-            }
-        ]
-    }
-}
 
 //Util function
 function vec3( x = 0, y = 0, z = 0 ) {
@@ -79,8 +42,8 @@ function addVec3( vec1, vec2 ) {
     }
 }
 
-function getTransform( pos, org ) { //
-    return `rotateX( ${ org.x }deg ) rotateY( ${ org.y }deg ) translate3d(${ pos.x }px, ${ pos.y }px, ${ pos.z }px)`
+function getTransform( position, rotation ) {
+    return `rotateX( ${ rotation.x }deg ) rotateY( ${ rotation.y }deg ) rotateZ( ${ rotation.z }deg ) translate3d(${ position.x }px, ${ position.y }px, ${ position.z }px)`
 }
 
 function clamp( min, max, val ) {
@@ -134,20 +97,9 @@ function onMouseMove( event ) {
 let test
 let cubeRot = vec3()
 
-function updateWorld() {// 
-    world.style.transform = 
-      "translateZ( 800px )" +  getTransform( position, rotation )
-    
-    test.style.transform =
-        getTransform( vec3(  ), cubeRot )
-
-    cubeRot.x += 5
-    if ( cubeRot.x > 360 ) {
-        cubeRot.x -= 360
-    }
-    cubeRot.y += 5
-    if ( cubeRot.y > 360 ) {
-        cubeRot.y -= 360
+function updateWorld() {
+    if ( world != null ) {
+        world.style.transform = `translateZ( ${ perspective }px )` +  getTransform( position, rotation )
     }
 }
 
@@ -198,73 +150,22 @@ function updatePlayerMovement() {
     if ( rotation.z < -360 ) { rotation.z += 360 }
 }
 
-function drawInfoPanel() {
-
-    if (!isInfoPanelOpen) {
-        container.style.width = `98%`
-
-        infoWindow.style.width = `0%`
-        infoWindow.style.marginRight = `0%`
-        infoWindow.style.marginLeft = `0%`
-        infoWindow.style.padding = `0%`
-
-        infoWindow.innerHTML = ``
-    } 
-    else if (isInfoPanelOpen) {
-        container.style.width = `84%`
-
-        infoWindow.style.width = `10%`
-        infoWindow.style.marginRight = `2%`
-        infoWindow.style.marginLeft = `1%`
-        infoWindow.style.padding = `1%`
-
-        infoWindow.innerHTML = `
-        <h5>The Information Panel</h5>
-        <hr>
-        <p>Movement speed: ${movementSpeed}px
-        Camera sensitivity: ${sensitivity * 100}%
-        <hr>
-        Players camera coordinates:<br>
-        x: ${ position.x }<br>
-        y: ${ position.y }<br>
-        z: ${ position.z }
-        <hr>
-        
-        Players camera rotation:<br>
-        
-        x: ${ rotation.x }<br>
-        y: ${ rotation.y }<br>
-        z: ${ rotation.z }
-
-        <hr>
-        </p>
-        <p id="finePrint">
-        Movement controls:<br>
-        w: move forward<br>
-        a: move left<br>
-        s: move backward<br>
-        d: move right<br>
-        
-        shift: sprint<br>
-        <hr>
-        <p id="finePrint">Other functions:<br>
-        r: reset back to starting position<br>
-        i: open & close the information panel<br>
-        </p>`
-    }
-}
-
 
 //Main game loop
 function game() {
     
     updatePlayerMovement()
-    
-    drawInfoPanel()
+
     updateWorld()
 
     myReq = requestAnimationFrame(game)
 }
+
+let screenX = container.offsetWidth / 2
+let screenY = container.offsetHeight / 2
+
+//Sanity check z is y
+//Origin is rotated by 90° on the x axis
 
 function parsDiv( entry, parent ) {
     if ( entry.type != 'div' ) return;
@@ -276,9 +177,16 @@ function parsDiv( entry, parent ) {
     div.style.width = ( entry.meta.width || 100 ) + 'px'
     div.style.height = ( entry.meta.height || 100 ) + 'px'
     
-    div.style.transform = getTransform( addVec3(
-        entry.position, vec3( -entry.meta.width / 2, -entry.meta.height / 2, 0 )
-    ), entry.rotation )
+    div.style.perspective = Math.max(entry.meta.width, entry.meta.height) * 2; + 'px';
+
+    div.style.transform = 'translate(-50%, -50%) ' + getTransform( 
+        vec3(
+            entry.position.x,
+            entry.position.y,
+            entry.position.z,
+        ),
+        entry.rotation
+     )
 
     if ( entry.meta.color ) {
         div.style.background = entry.meta.color
@@ -299,7 +207,8 @@ function parsBundle( bundle, parent ) {
     div.style.width = "0px"
     div.style.height = "0px"
 
-    div.style.transform = getTransform( bundle.position, bundle.rotation )
+    // div.style.perspective = size
+    div.style.transform ='translate(-50%, -50%) ' +  getTransform( bundle.position, bundle.rotation )
 
     parent.appendChild( div )
 
@@ -323,7 +232,10 @@ Object.assign( position, map.player.pos )
 Object.assign( rotation, map.player.rot )
 
 test = document.getElementById( "cubiod" )
-world.style.width = "100%"
-world.style.height = "100%"
+
+container.style.perspective = perspective + "px"
+
+world.style.width = container.style.width
+world.style.height = container.style.height
 //Starting le gaem
 game()

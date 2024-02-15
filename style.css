@@ -14,19 +14,18 @@
 	overflow:hidden;
 
 	height: 95%;
+	width: 100%;
 
-    perspective:800px;
-    perspective-origin: center center;
+    perspective:600px;
 }
 
 .bundle{
-	position: absolute;
-
+	position:absolute;
 	width:inherit;
 	height:inherit;
-
 	transform-style:preserve-3d;
 }
 .plane{
 	position: absolute;
+	transform:translate(-50%,-50%);
 }
