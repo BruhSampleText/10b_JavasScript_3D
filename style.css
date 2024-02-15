@@ -1,30 +1,32 @@
-#container {
-    position: absolute;
-    height: 800px;
-    width: 1200px;
-    border: 2px solid #000000;
-    perspective: 600px;
+#finePrint {
+    font-style: italic;
 }
 
-#world {
-    position: absolute;
-    height: inherit;
-    width: inherit;
-    transform-style: preserve-3d;
-    transform: translate3d(300px, 250px, 0px) rotateX(-30deg) rotateY(0deg) rotateZ(0deg);
+#infoWindow {
+    background-color: rgb(229, 229, 229);
+    height: 95%;
+    display: inline-block;
 }
 
-#square1 {
-    position: absolute;
-    height: 200px;
-    width:200px;
-    background: rgba(255, 0 , 0, 0.5);
-    transform: translate3d(0px, 0px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+#container{
+	position: absolute;
+	border:2px solid #000000;
+	overflow:hidden;
+
+	height: 95%;
+
+    perspective:800px;
+    perspective-origin: center center;
 }
-#square2 {
-    position: absolute;
-    height: 200px;
-    width:200px;
-    background: rgba(255, 255 , 0, 0.5);
-    transform: translate3d(0px, 100px, -100px) rotateX(90deg) rotateY(0deg) rotateZ(0deg);
+
+.bundle{
+	position: absolute;
+
+	width:inherit;
+	height:inherit;
+
+	transform-style:preserve-3d;
+}
+.plane{
+	position: absolute;
 }
